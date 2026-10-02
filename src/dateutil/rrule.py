@@ -173,15 +173,11 @@ class rrulebase(object):
 
     def __contains__(self, item):
         if self._cache_complete:
-            if len(self._cache) > _CACHE_BISECT_THRESHOLD:
-                try:
-                    if self._cache[_CACHE_BISECT_THRESHOLD] <= item:
-                        i = bisect.bisect_left(self._cache, item)
-                        return (i < len(self._cache) and
-                                self._cache[i] == item)
-                except TypeError:
-                    pass
-            return item in self._cache
+            try:
+                i = bisect.bisect_left(self._cache, item)
+                return i < len(self._cache) and self._cache[i] == item
+            except TypeError:
+                return item in self._cache
         else:
             for i in self:
                 if i == item:
