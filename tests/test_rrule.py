@@ -2677,6 +2677,25 @@ class RRuleTest(unittest.TestCase):
         for x in rr: pass
         self.assertEqual(datetime(1997, 9, 3, 9, 0) in rr, True)
 
+    def testCachePostContainsLarge(self):
+        dtstart = datetime(1997, 9, 2, 9, 0)
+        rr = rrule(DAILY, count=100, cache=True, dtstart=dtstart)
+        list(rr)
+
+        self.assertIn(dtstart + timedelta(days=75), rr)
+        self.assertNotIn(dtstart + timedelta(days=75, hours=1), rr)
+        self.assertNotIn(dtstart + timedelta(hours=1), rr)
+
+    def testCachePostContainsIncomparableType(self):
+        rr = rrule(
+            DAILY, count=100, cache=True, dtstart=datetime(1997, 9, 2, 9, 0)
+        )
+        list(rr)
+
+        self.assertNotIn(None, rr)
+        self.assertNotIn("1997-11-16", rr)
+        self.assertNotIn(date(1997, 11, 16), rr)
+
     def testCachePostQueries(self):
         dtstart = datetime(1997, 9, 2, 9, 0)
         rr = rrule(DAILY, count=100, cache=True, dtstart=dtstart)
