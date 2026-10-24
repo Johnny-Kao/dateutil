@@ -1,0 +1,54 @@
+name: parserinfo isolated benchmark
+on:
+  push:
+    branches: [staging/parserinfo-dict-get-1613]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e .
+      - name: Differential CPU benchmark (pristine code and isolated patch)
+        shell: bash
+        run: |
+          cp src/dateutil/parser/_parser.py /tmp/optimized_parser.py
+          git show HEAD~2:src/dateutil/parser/_parser.py > /tmp/baseline_parser.py
+          cat > /tmp/bench_parser.py <<'PY'
+          from dateutil.parser import parse
+          import time
+          import statistics
+          workloads = {
+            "fuzzy": ("Reminder dentist Tue Apr 9 14:00:00 2024 bring card", {"fuzzy": True}),
+            "strict": ("Thu Sep 25 10:36:28 2003", {}),
+            "iso": ("2024-01-15T10:30:00", {}),
+          }
+          for name, (value, kwargs) in workloads.items():
+              parse(value, **kwargs)
+              times=[]
+              for i in range(5):
+                  start=time.process_time()
+                  for _ in range(5000): parse(value, **kwargs)
+                  times.append(time.process_time()-start)
+              print("BENCH",name,"CPU samples",*[round(t,6) for t in times],"median",round(statistics.median(times),6))
+          PY
+          cp /tmp/baseline_parser.py src/dateutil/parser/_parser.py
+          echo "BASELINE"
+          python /tmp/bench_parser.py
+          cp /tmp/optimized_parser.py src/dateutil/parser/_parser.py
+          echo "PATCHED"
+          python /tmp/bench_parser.py
+          python - <<'PY'
+          import dateutil.parser._parser as p
+          import pathlib
+          print('SOURCE VERIFIED',pathlib.Path(p.__file__).resolve())
+          assert 'src/dateutil/parser/_parser.py' in str(pathlib.Path(p.__file__).resolve())
+          PY
