@@ -320,30 +320,21 @@ class parserinfo(object):
         return name.lower() in self._jump
 
     def weekday(self, name):
-        try:
-            return self._weekdays[name.lower()]
-        except KeyError:
-            pass
-        return None
+        return self._weekdays.get(name.lower())
 
     def month(self, name):
-        try:
-            return self._months[name.lower()] + 1
-        except KeyError:
-            pass
-        return None
+        month = self._months.get(name.lower())
+
+        if month is None:
+            return None
+
+        return month + 1
 
     def hms(self, name):
-        try:
-            return self._hms[name.lower()]
-        except KeyError:
-            return None
+        return self._hms.get(name.lower())
 
     def ampm(self, name):
-        try:
-            return self._ampm[name.lower()]
-        except KeyError:
-            return None
+        return self._ampm.get(name.lower())
 
     def pertain(self, name):
         return name.lower() in self._pertain
