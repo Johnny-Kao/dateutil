@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install dependencies with upstream pytest behavior
-        run: python -m pip install -e . pytest hypothesis freezegun pytest-cov
+        run: python -m pip install -e . pytest hypothesis pytest-cov
       - name: Full test suite (original warnings, no test suppressions)
         id: full
         continue-on-error: true
