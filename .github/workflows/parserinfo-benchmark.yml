@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 5
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           cp src/dateutil/parser/_parser.py /tmp/optimized_parser.py
-          git show HEAD~3:src/dateutil/parser/_parser.py > /tmp/baseline_parser.py
+          git show origin/master:src/dateutil/parser/_parser.py > /tmp/baseline_parser.py
           cat > /tmp/bench_parser.py <<'PY'
           from dateutil.parser import parse
           import time
