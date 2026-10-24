@@ -30,7 +30,13 @@ jobs:
         run: |
           python -m pip install -e .
           python -m pip install 'pytest==7.4.4' hypothesis pytest-cov
-          python -m pip install 'freezegun==1.5.5'
+          python -m pip install --no-deps 'freezegun==1.5.5'
+          python - <<'PY'
+          import dateutil, pathlib
+          p=pathlib.Path(dateutil.__file__).resolve()
+          print('TESTED DATEUTIL SOURCE:',p)
+          assert str(pathlib.Path.cwd().resolve()) in str(p), ('Wrong package installed',p)
+          PY
       - name: Full test suite with compatible pytest
         id: full
         continue-on-error: true
