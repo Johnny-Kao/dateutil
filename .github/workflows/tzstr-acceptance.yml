@@ -34,13 +34,13 @@ jobs:
       - name: Full test suite with compatible pytest
         id: full
         continue-on-error: true
-        run: python -m pytest tests -q --tb=short -W ignore::UserWarning
+        run: python -m pytest tests -q --tb=short -W ignore::UserWarning -W ignore::DeprecationWarning
       - name: Full suite result
         run: 'echo "Full suite outcome: ${{ steps.full.outcome }}"'
       - name: Focused tzstr suite
         id: tz
         continue-on-error: true
-        run: python -m pytest tests/test_tz.py -q -m tzstr --tb=short -W ignore::UserWarning
+        run: python -m pytest tests/test_tz.py -q -m tzstr --tb=short -W ignore::UserWarning -W ignore::DeprecationWarning
       - name: Focused result
         run: 'echo "Focused result: ${{ steps.tz.outcome }}"'
       - name: Changelog review
