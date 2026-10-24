@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - staging/parserinfo-dict-get-1613
   pull_request:
 
 env:
@@ -12,7 +13,7 @@ env:
 
 jobs:
   build-tzdata:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Cache tzdata
         id: cache-tzdata
@@ -57,7 +58,7 @@ jobs:
           "pypy-2.7",
           "pypy-3.8",
         ]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-24.04, windows-latest, macos-latest]
         include:
           # Older versions (<=3.7) are included separately since they need
           # special handling (using an older os or a container)
@@ -73,16 +74,16 @@ jobs:
             python-version: "3.6"
           - os: "windows-latest"
             python-version: "3.7"
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             python-version: "2.7"
             use-container: true
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             python-version: "3.5"
             use-container: true
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             python-version: "3.6"
             use-container: true
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             python-version: "3.7"
             use-container: true
     runs-on: ${{ matrix.os }}
@@ -148,7 +149,7 @@ jobs:
           fail_ci_if_error: false
 
   other:
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-24.04"
     needs: build-tzdata
     strategy:
       matrix:
@@ -187,7 +188,7 @@ jobs:
         run: tox
 
   darker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -208,7 +209,7 @@ jobs:
         run: darker --check --diff --color --isort --revision "$REVISION" .
 
   build-dist:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
