@@ -1,4 +1,4 @@
-name: tzstr three-PR comparison
+name: tzstr four-PR cross-platform comparison
 on:
   push:
     branches: [research/tzstr-three-pr-comparison]
@@ -7,11 +7,15 @@ permissions:
   contents: read
 jobs:
   compare:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        pr: [1453, 1530, 1563]
+        pr: [1453, 1530, 1554, 1563]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
         with:
