@@ -1,0 +1,49 @@
+name: tzstr three-PR comparison
+on:
+  push:
+    branches: [research/tzstr-three-pr-comparison]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pr: [1453, 1530, 1563]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: dateutil/dateutil
+          ref: refs/pull/${{ matrix.pr }}/head
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: |
+          python -m pip install -e . 'pytest==7.4.4' hypothesis
+      - name: Test tzstr suite
+        run: python -m pytest tests/test_tz.py -q -m tzstr -o 'markers=no_cover'
+      - name: Shared regression matrix
+        run: |
+          python - <<'PY'
+          from datetime import datetime, timedelta
+          from dateutil.tz import tzstr, gettz
+          checks=0
+          for name in ["GMT", "UTC", "GMT,4;3/4"]:
+              obj=tzstr(name)
+              for year in [2000, 2020, 2026]:
+                  assert datetime(year, 6, 1, tzinfo=obj).utcoffset() == timedelta(0), name
+                  checks += 1
+          assert gettz("GMT,4;3/4") is not None
+          checks += 1
+          for name,h in [("GMT-3",-3),("GMT+3",3),("UTC-3",-3),("UTC+3",3)]:
+              assert datetime(2020, 6, 1, tzinfo=tzstr(name)).utcoffset() == timedelta(hours=h), name
+              checks += 1
+          for name in ["GMT", "UTC", "GMT-3", "GMT+3"]:
+              assert tzstr(name, posix_offset=True) is not None
+              checks += 1
+          print(f"PASS {checks} shared assertions")
+          PY
