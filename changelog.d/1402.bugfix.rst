@@ -1,0 +1,1 @@
+Fixed a ``TypeError`` raised when constructing ``tz.tzstr`` from a bare ``GMT`` or ``UTC`` string. Reported in gh issue #1402; implementation ported from dateutil/dateutil#1530.
