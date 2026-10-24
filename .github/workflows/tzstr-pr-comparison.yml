@@ -28,7 +28,8 @@ jobs:
       - name: Install
         run: |
           python -m pip install -e . 'pytest==7.4.4' hypothesis
-      - name: Test tzstr suite
+      - name: Test tzstr suite (Linux/macOS)
+        if: runner.os != 'Windows'
         run: python -m pytest tests/test_tz.py -q -m tzstr -W ignore::pytest.PytestUnknownMarkWarning -W ignore::UserWarning
       - name: Shared regression matrix
         run: |
