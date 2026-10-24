@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - staging/tzstr-pr1530-full-ci
   pull_request:
 
 env:
