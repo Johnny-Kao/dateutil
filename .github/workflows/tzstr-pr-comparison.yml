@@ -25,7 +25,7 @@ jobs:
         run: |
           python -m pip install -e . 'pytest==7.4.4' hypothesis
       - name: Test tzstr suite
-        run: python -m pytest tests/test_tz.py -q -m tzstr -o 'markers=no_cover'
+        run: python -m pytest tests/test_tz.py -q -m tzstr -W ignore::pytest.PytestUnknownMarkWarning
       - name: Shared regression matrix
         run: |
           python - <<'PY'
